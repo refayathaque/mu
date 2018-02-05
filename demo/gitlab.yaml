@@ -3,37 +3,36 @@
   - name: appname
     default: demo
   - name: instance_type
-    default: t2.xlarge #t2.micro
+    #default: t2.micro
+    default: t2.xlarge
   - name: vpc
     cloudtype: AWS::EC2::VPC::Id
     default: <%= MU.myVPC %>
-    
-appname: <%= appname %>
-servers:
-  -
-    name: gitlab
-    ssh_user: ubuntu
-    platform: ubuntu
-    storage:
+
+# BEGIN APPLICATION DEFINITION
+  appname: <%= appname %>
+  servers: 
+    - 
+      name: gitlab
+      size: <%= instance_type %>
+      platform: ubuntu
+      storage:
       -
         size: 16
-    skipinitialupdates: true
-    size: <%= instance_type %>
-    run_list:
-    - recipe[demo::gitlab]
-    - recipe[demo::gitlab_runner]
-    associate_public_ip: true
-    static_ip: 
-      assign_ip: true
+      skipinitialupdates: true
+      associate_public_ip: true
+      run_list:
+        - recipe[demo::gitlab]
+        - recipe[demo::gitlab_runner]
       vpc:
         vpc_id: <%= vpc %>
         subnet_pref: public
-    ingress_rules:
+      ingress_rules:
       -
-        port: 80
+        port: 443
         hosts:
           - "0.0.0.0/0"
       -
-        port: 443
+        port: 80
         hosts:
           - "0.0.0.0/0"
