@@ -29,18 +29,16 @@ node.override['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'
 runnerToken = SecureRandom.urlsafe_base64
 rootPWD = 'superman'
 
-MU::Groomer::Chef.saveSecret(
-    vault: "gitlab",
-    item: "rootLogin",
-    data: { "username" => "root", "password" => rootPWD },
-    permissions: "name:MU-MASTER"
-)
-MU::Groomer::Chef.saveSecret(
-    vault: "gitlab",
-    item: "runnerToken",
-    data: {"endpoint" => node['gitlab']['endpoint'], "token" => runnerToken},
-    permissions: "name:MU-MASTER"
-)
+chef_vault_secret 'gitlab' do
+    data_bag 'rootLogin'
+    raw_data({ "username" => "root", "password" => rootPWD })
+    search 'name:MU-MASTER'
+end
+chef_vault_secret 'gitlab' do
+    data_bag 'runnerToken'
+    raw_data({"endpoint" => node['gitlab']['endpoint'], "token" => runnerToken})
+    search 'name:MU-MASTER'
+end
 # TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
 
 # SETUP VARIABLES FOR GITLAB.RB CONFIGURATION
