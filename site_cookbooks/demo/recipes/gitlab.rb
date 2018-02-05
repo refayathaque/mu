@@ -34,7 +34,7 @@ chef_vault_secret 'gitlab' do
     data_bag 'rootLogin'
     raw_data({ "username" => "root", "password" => rootPWD })
     admins 'DEMO-DEV-2018020521-NK-GITLAB'
-    #search 'name:MU-MASTER'
+    search '*:*'
 end
 
 chef_vault_secret 'gitlab' do
@@ -42,7 +42,7 @@ chef_vault_secret 'gitlab' do
     data_bag 'runnerToken'
     raw_data({"endpoint" => node['gitlab']['endpoint'], "token" => runnerToken})
     admins 'DEMO-DEV-2018020521-NK-GITLAB'
-    #search 'name:MU-MASTER'
+    search '*:*'
 end
 # TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
 
