@@ -29,46 +29,19 @@ node.override['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'
 runnerToken = SecureRandom.urlsafe_base64
 rootPWD = 'superman'
 
-begin
-    data_bag('rootLogin')
-rescue
-    ruby_block "create-data_bag-rootLogin" do
-        block do
-        Chef::DataBag.validate_name!('rootLogin')
-        databag = Chef::DataBag.new
-        databag.name('rootLogin')
-        databag.save
-        end
-        action :create
-    end
-end
-
 chef_vault_secret 'gitlab' do
     action :create_if_missing
     data_bag 'rootLogin'
     raw_data({ "username" => "root", "password" => rootPWD })
-    admins 'mu'
+    admins 'DEMO-DEV-2018020521-NK-GITLAB'
     #search 'name:MU-MASTER'
 end
 
-begin
-    data_bag('runnerToken')
-rescue
-    ruby_block "create-data_bag-runnerToken" do
-        block do
-        Chef::DataBag.validate_name!('runnerToken')
-        databag = Chef::DataBag.new
-        databag.name('runnerToken')
-        databag.save
-        end
-        action :create
-    end
-end
 chef_vault_secret 'gitlab' do
     action :create_if_missing
     data_bag 'runnerToken'
     raw_data({"endpoint" => node['gitlab']['endpoint'], "token" => runnerToken})
-    admins 'mu'
+    admins 'DEMO-DEV-2018020521-NK-GITLAB'
     #search 'name:MU-MASTER'
 end
 # TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
