@@ -7,7 +7,7 @@
   - name: vpc
     cloudtype: AWS::EC2::VPC::Id
     default: <%= MU.myVPC %>
----
+    
 appname: <%= appname %>
 servers:
   -
