@@ -30,6 +30,7 @@ runnerToken = SecureRandom.urlsafe_base64
 rootPWD = 'superman'
 
 node.override['gitlab']['rootPWD'] = rootPWD
+node.override['gitlab']['endpoint'] = node['gitlab']['endpoint']
 node.override['gitlab']['runnerToken'] = runnerToken
 # TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
 
