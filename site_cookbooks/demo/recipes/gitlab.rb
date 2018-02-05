@@ -33,14 +33,12 @@ chef_vault_secret 'gitlab' do
     action :create_if_missing
     data_bag 'rootLogin'
     raw_data({ "username" => "root", "password" => rootPWD })
-    admins 'root'
     search 'name:MU-MASTER'
 end
 chef_vault_secret 'gitlab' do
     action :create_if_missing
     data_bag 'runnerToken'
     raw_data({"endpoint" => node['gitlab']['endpoint'], "token" => runnerToken})
-    admins 'root'
     search 'name:MU-MASTER'
 end
 # TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
