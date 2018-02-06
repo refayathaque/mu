@@ -26,20 +26,32 @@ node.override['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'
 node.override['gitlab']['endpoint'] = node['gitlab']['endpoint']
 ENV['GITLAB_ENDPOINT'] = node['gitlab']['endpoint']
 
-if node['gitlab']['runnerToken'].nil?
+if node['gitlab'].attribute?('runnerToken')
     # GENERATE A RUNNER TOKEN
     runnerToken = SecureRandom.urlsafe_base64
     node.override['gitlab']['runnerToken'] = runnerToken
     ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN'] = runnerToken
 end
 
-if node['gitlab']['runnerToken'].nil?
+# TODO SAVE PWD and TOKEN TO VAULT FOR SECURITY
+
+if node['gitlab'].attribute?('rootPWD')
     # GENERATE A ROOT PASSWORD
     rootPWD = SecureRandom.urlsafe_base64
     node.override['gitlab']['rootPWD'] = rootPWD
     ENV['GITLAB_ROOT_PASSWORD'] = rootPWD
+
+    # Notify Users of GITLAB instalation
+    ruby_block "gitlabNotify" do
+        block do
+            puts "\n######################################## End of Run Information ########################################"
+            puts "# Your Gitlab Server is running at #{node['omnibus-gitlab']['gitlab_rb']['external_url']}"
+            puts "# The root password is #{rootPWD} you may want to change it..."
+            puts "########################################################################################################\n\n"
+        end
+    end
 end
-# TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
+
 
 
 
@@ -48,12 +60,3 @@ node.override['omnibus-gitlab']['gitlab_rb']['external_url'] = node['gitlab']['e
 
 include_recipe 'omnibus-gitlab::default'
 
-# Notify Users of GITLAB instalation
-ruby_block "gitlabNotify" do
-    block do
-        puts "\n######################################## End of Run Information ########################################"
-        puts "# Your Gitlab Server is running at #{node['omnibus-gitlab']['gitlab_rb']['external_url']}"
-        puts "# The root password is #{rootPWD} you may want to change it..."
-        puts "########################################################################################################\n\n"
-    end
-end
