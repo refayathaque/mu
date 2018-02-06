@@ -23,4 +23,4 @@
         - recipe[demo::gitlab_runner]
       vpc:
         vpc_id: <%= vpc %>
-        subnet_pref: private
+        subnet_pref: public
