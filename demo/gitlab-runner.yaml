@@ -15,7 +15,6 @@
       name: gitlab-runner-D
       size: <%= instance_type %>
       platform: ubuntu
-      count: 2
       storage:
       -
         size: 16
@@ -25,19 +24,19 @@
       vpc:
         vpc_id: <%= vpc %>
         subnet_pref: public
-    - 
-      name: gitlab-runner-R
-      size: <%= instance_type %>
-      platform: centos
-      storage:
-      -
-        size: 16
-      skipinitialupdates: true
-      run_list:
-        - recipe[demo::gitlab_runner]
-      vpc:
-        vpc_id: <%= vpc %>
-        subnet_pref: public
+    # - 
+    #   name: gitlab-runner-R
+    #   size: <%= instance_type %>
+    #   platform: centos
+    #   storage:
+    #   -
+    #     size: 16
+    #   skipinitialupdates: true
+    #   run_list:
+    #     - recipe[demo::gitlab_runner]
+    #   vpc:
+    #     vpc_id: <%= vpc %>
+    #     subnet_pref: public
     - 
       name: gitlab-runner-W
       size: <%= instance_type %>
