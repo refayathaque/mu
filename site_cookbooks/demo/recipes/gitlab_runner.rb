@@ -18,56 +18,56 @@
 
 case node['platform']
 
-when 'linux'
-
-  case node['platform_family']
-  when 'rhel', 'amazon'
-    scriptURL = 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh'
-  when 'debian'
-    scriptURL = 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh'
-  end
-
-  execute 'Configure Repositories' do
-    command "curl -L #{scriptURL} | sudo bash"
-  end
-
-  package 'gitlab-runner' do
-    action :install
-  end
-
-  service 'gitlab-runner' do
-    action [:enable, :start]
-  end
-
-  # SEARCH FOR THE GITLAB SERVER
-
-  gitlabServer = ''
-  gitlabToken = ''
-
-  gitlabServers = search(:node, "gitlab_is_server:true") do |node|
-    gitlabServer = node['gitlab']['endpoint']
-    gitlabToken = node['gitlab']['runnerToken']
-  end
-
-  if gitlabServer == '' 
-    gitlabServer = ENV['GITLAB_ENDPOINT']
-    gitlabToken = ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN']
-  end
-
-
-
-
-  execute 'Register Runner' do
-    command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor docker --docker-image ubuntu --locked false --tag-list '#{node['ec2']['public_dns_name']}, #{node['platform_family']}, docker'"
-    notifies :restart, "service[gitlab-runner]", :delayed
-  end
-
-  docker_service 'default' do
-    action [:create, :start]
-  end
-
 when 'windows'
-  puts "******************************************************"
-  puts "NEED TO DO WINDOWS STUFFS!"
-  puts "******************************************************"
+    puts "******************************************************"
+    puts "NEED TO DO WINDOWS STUFFS!"
+    puts "******************************************************"
+
+else
+
+    case node['platform_family']
+    when 'rhel', 'amazon'
+      scriptURL = 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh'
+    when 'debian'
+      scriptURL = 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh'
+    end
+
+    execute 'Configure Repositories' do
+      command "curl -L #{scriptURL} | sudo bash"
+    end
+
+    package 'gitlab-runner' do
+      action :install
+    end
+
+    service 'gitlab-runner' do
+      action [:enable, :start]
+    end
+
+    # SEARCH FOR THE GITLAB SERVER
+
+    gitlabServer = ''
+    gitlabToken = ''
+
+    gitlabServers = search(:node, "gitlab_is_server:true") do |node|
+      gitlabServer = node['gitlab']['endpoint']
+      gitlabToken = node['gitlab']['runnerToken']
+    end
+
+    if gitlabServer == '' 
+      gitlabServer = ENV['GITLAB_ENDPOINT']
+      gitlabToken = ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN']
+    end
+
+
+
+
+    execute 'Register Runner' do
+      command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor docker --docker-image ubuntu --locked false --tag-list '#{node['ec2']['public_dns_name']}, #{node['platform_family']}, docker'"
+      notifies :restart, "service[gitlab-runner]", :delayed
+    end
+
+    docker_service 'default' do
+      action [:create, :start]
+    end
 end
