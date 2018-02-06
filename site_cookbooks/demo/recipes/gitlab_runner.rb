@@ -16,6 +16,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+
+# SEARCH FOR THE GITLAB SERVER
+
+gitlabServer = ''
+gitlabToken = ''
+
+gitlabServers = search(:node, "gitlab_is_server:true") do |node|
+  gitlabServer = node['gitlab']['endpoint']
+  gitlabToken = node['gitlab']['runnerToken']
+end
+
+if gitlabServer == '' 
+  gitlabServer = ENV['GITLAB_ENDPOINT']
+  gitlabToken = ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN']
+end
+
 case node['platform']
 
 when 'windows'
@@ -23,6 +40,18 @@ when 'windows'
     puts "NEED TO DO WINDOWS STUFFS!"
     puts "******************************************************"
 
+    powershell_script 'Install Chocolatey' do
+      code <<-EOH
+      Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+      
+      EOH
+      not_if 'choco -v'
+    end
+    
+    chocolatey_package 'gitlab-runner'  do
+      action :upgrade
+    end
+    
 else
 
     case node['platform_family']
@@ -43,24 +72,6 @@ else
     service 'gitlab-runner' do
       action [:enable, :start]
     end
-
-    # SEARCH FOR THE GITLAB SERVER
-
-    gitlabServer = ''
-    gitlabToken = ''
-
-    gitlabServers = search(:node, "gitlab_is_server:true") do |node|
-      gitlabServer = node['gitlab']['endpoint']
-      gitlabToken = node['gitlab']['runnerToken']
-    end
-
-    if gitlabServer == '' 
-      gitlabServer = ENV['GITLAB_ENDPOINT']
-      gitlabToken = ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN']
-    end
-
-
-
 
     execute 'Register Runner' do
       command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor docker --docker-image ubuntu --locked false --tag-list '#{node['ec2']['public_dns_name']}, #{node['platform_family']}, docker'"

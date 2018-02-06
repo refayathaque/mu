@@ -23,25 +23,28 @@ include_recipe 'chef-vault'
 # Set an attribute to identify the node as a GitLab Server
 node.override['gitlab']['is_server'] = true
 node.override['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'/'
-
-
-# GENERATE A RUNNERTOKEN AND A ROOT PASSWORD
-runnerToken = SecureRandom.urlsafe_base64
-rootPWD = SecureRandom.urlsafe_base64
-
-node.override['gitlab']['rootPWD'] = rootPWD
 node.override['gitlab']['endpoint'] = node['gitlab']['endpoint']
-node.override['gitlab']['runnerToken'] = runnerToken
+ENV['GITLAB_ENDPOINT'] = node['gitlab']['endpoint']
+
+if node['gitlab']['runnerToken'].nil?
+    # GENERATE A RUNNER TOKEN
+    runnerToken = SecureRandom.urlsafe_base64
+    node.override['gitlab']['runnerToken'] = runnerToken
+    ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN'] = runnerToken
+end
+
+if node['gitlab']['runnerToken'].nil?
+    # GENERATE A ROOT PASSWORD
+    rootPWD = SecureRandom.urlsafe_base64
+    node.override['gitlab']['rootPWD'] = rootPWD
+    ENV['GITLAB_ROOT_PASSWORD'] = rootPWD
+end
 # TODO SAVE THEM TO A VAULT FOR FUTURE ACCESS
+
+
 
 # SETUP VARIABLES FOR GITLAB.RB CONFIGURATION
 node.override['omnibus-gitlab']['gitlab_rb']['external_url'] = node['gitlab']['endpoint']
-
-# SET ENV VARIABLES TO PASS TO GITLAB AND TO THE GITLAB RUNNER
-ENV['GITLAB_ENDPOINT'] = node['gitlab']['endpoint']
-ENV['GITLAB_ROOT_PASSWORD'] = rootPWD
-ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN'] = runnerToken
-
 
 include_recipe 'omnibus-gitlab::default'
 
