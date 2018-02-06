@@ -48,7 +48,7 @@ gitlabServers = search(:node, "gitlab_is_server:true") do |node|
   gitlabToken = node['gitlab']['runnerToken']
 end
 
-if endpoint == '' 
+if gitlabServer == '' 
   gitlabServer = ENV['GITLAB_ENDPOINT']
   gitlabToken = ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN']
 end
