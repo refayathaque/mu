@@ -20,25 +20,30 @@ require 'securerandom'
 include_recipe 'chef-vault'
 #DO CONFIG HERE
 
+# MOVE THESE ATTRIBUTES TO A ATTRIBUTES FILE
+node.default['gitlab']['generate_runnerToken'] = true
+node.default['gitlab']['generate_password'] = true
+
+
 # Set an attribute to identify the node as a GitLab Server
-node.override['gitlab']['is_server'] = true
-node.override['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'/'
-node.override['gitlab']['endpoint'] = node['gitlab']['endpoint']
+node.default['gitlab']['is_server'] = true
+node.default['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'/'
+node.default['gitlab']['endpoint'] = node['gitlab']['endpoint']
 ENV['GITLAB_ENDPOINT'] = node['gitlab']['endpoint']
 
-if node['gitlab'].attribute?('runnerToken')
+if node['gitlab'].attribute?('runnerToken') && node['gitlab']['generate_runnerToken'] == true
     # GENERATE A RUNNER TOKEN
     runnerToken = SecureRandom.urlsafe_base64
-    node.override['gitlab']['runnerToken'] = runnerToken
+    node.default['gitlab']['runnerToken'] = runnerToken
     ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN'] = runnerToken
 end
 
 # TODO SAVE PWD and TOKEN TO VAULT FOR SECURITY
 
-if node['gitlab'].attribute?('rootPWD')
+if node['gitlab'].attribute?('rootPWD') && node['gitlab']['generate_password'] == true
     # GENERATE A ROOT PASSWORD
     rootPWD = SecureRandom.urlsafe_base64
-    node.override['gitlab']['rootPWD'] = rootPWD
+    node.default['gitlab']['rootPWD'] = rootPWD
     ENV['GITLAB_ROOT_PASSWORD'] = rootPWD
 
     # Notify Users of GITLAB instalation
