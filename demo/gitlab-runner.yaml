@@ -37,17 +37,17 @@
     #   vpc:
     #     vpc_id: <%= vpc %>
     #     subnet_pref: public
-    - 
-      name: gitlab-runner-W
-      size: <%= instance_type %>
-      platform: windows
-      storage:
-      -
-        size: 16
-      skipinitialupdates: true
-      run_list:
-        - recipe[demo::gitlab_runner]
-      vpc:
-        vpc_id: <%= vpc %>
-        subnet_pref: public
+    # - 
+    #   name: gitlab-runner-W
+    #   size: <%= instance_type %>
+    #   platform: windows
+    #   storage:
+    #   -
+    #     size: 16
+    #   skipinitialupdates: true
+    #   run_list:
+    #     - recipe[demo::gitlab_runner]
+    #   vpc:
+    #     vpc_id: <%= vpc %>
+    #     subnet_pref: public
       
