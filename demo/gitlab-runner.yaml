@@ -12,7 +12,7 @@
   appname: <%= appname %>
   servers: 
     - 
-      name: gitlab-runner-debian
+      name: gitlab-runner-D
       size: <%= instance_type %>
       platform: ubuntu
       storage:
@@ -25,9 +25,9 @@
         vpc_id: <%= vpc %>
         subnet_pref: public
     - 
-      name: gitlab-runner-rhel
+      name: gitlab-runner-R
       size: <%= instance_type %>
-      platform: centos7
+      platform: centos
       storage:
       -
         size: 16
