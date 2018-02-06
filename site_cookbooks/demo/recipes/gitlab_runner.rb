@@ -16,7 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+node.default['gitlab-runner']['executor'] = 'docker'
+node.default['gitlab-runner']['executor_options'] = '--docker-image ubuntu'
 
 # SEARCH FOR THE GITLAB SERVER
 
@@ -74,12 +75,15 @@ else
     end
 
     execute 'Register Runner' do
-      command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor docker --docker-image ubuntu --locked=false --tag-list '#{node['ec2']['public_dns_name']}, #{node['platform_family']}, docker'"
+      command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor #{node['gitlab-runner']['executor']} #{node['gitlab-runner']['executor_options']} --locked=false --tag-list '#{Chef::Config['node_name']}, #{node['platform_family']}, #{node['gitlab-runner']['executor']}'"
       notifies :restart, "service[gitlab-runner]", :delayed
       not_if "gitlab-runner verify -n #{Chef::Config['node_name']}"
     end
 
-    docker_service 'default' do
-      action [:create, :start]
+    case node['gitlab-runner']['executor']
+    when 'docker'
+      docker_service 'default' do
+        action [:create, :start]
+      end
     end
 end
