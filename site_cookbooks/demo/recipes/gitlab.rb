@@ -27,7 +27,7 @@ node.override['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'
 
 # GENERATE A RUNNERTOKEN AND A ROOT PASSWORD
 runnerToken = SecureRandom.urlsafe_base64
-rootPWD = 'superman'
+rootPWD = SecureRandom.urlsafe_base64
 
 node.override['gitlab']['rootPWD'] = rootPWD
 node.override['gitlab']['endpoint'] = node['gitlab']['endpoint']
@@ -50,6 +50,7 @@ ruby_block "gitlabNotify" do
     block do
         puts "\n######################################## End of Run Information ########################################"
         puts "# Your Gitlab Server is running at #{node['omnibus-gitlab']['gitlab_rb']['external_url']}"
+        puts "# The root password is #{rootPWD} you may want to change it..."
         puts "########################################################################################################\n\n"
     end
 end

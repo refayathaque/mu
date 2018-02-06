@@ -3,8 +3,9 @@
   - name: appname
     default: demo
   - name: instance_type
-    #default: t2.micro
     default: t2.xlarge
+  - name: runner_size
+    default: t2.micro
   - name: vpc
     cloudtype: AWS::EC2::VPC::Id
     default: <%= MU.myVPC %>
@@ -38,7 +39,7 @@
           - "0.0.0.0/0"
     - 
       name: gitlab-runner-D
-      size: <%= instance_type %>
+      size: <%= runner_size %>
       platform: ubuntu
       storage:
       -
@@ -54,21 +55,21 @@
         name: "gitlab"
         phase: "groom"
         type: "server"
-    - 
-      name: gitlab-runner-R
-      size: <%= instance_type %>
-      platform: centos
-      storage:
-      -
-        size: 16
-      skipinitialupdates: true
-      run_list:
-        - recipe[demo::gitlab_runner]
-      vpc:
-        vpc_id: <%= vpc %>
-        subnet_pref: public
-      dependencies:
-      -
-        name: "gitlab"
-        phase: "groom"
-        type: "server"
+    # - 
+    #   name: gitlab-runner-R
+    #   size: <%= runner_size %>
+    #   platform: centos
+    #   storage:
+    #   -
+    #     size: 16
+    #   skipinitialupdates: true
+    #   run_list:
+    #     - recipe[demo::gitlab_runner]
+    #   vpc:
+    #     vpc_id: <%= vpc %>
+    #     subnet_pref: public
+    #   dependencies:
+    #   -
+    #     name: "gitlab"
+    #     phase: "groom"
+    #     type: "server"
