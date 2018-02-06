@@ -16,8 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-node.default['gitlab-runner']['executor'] = 'docker'
-node.default['gitlab-runner']['executor_options'] = '--docker-image ubuntu'
+# node.default['gitlab-runner']['executor'] = 'docker'
+# node.default['gitlab-runner']['executor_options'] = '--docker-image ubuntu'
+node.default['gitlab-runner']['executor'] = 'shell'
+node.default['gitlab-runner']['executor_options'] = ''
 
 # SEARCH FOR THE GITLAB SERVER
 
@@ -84,6 +86,12 @@ else
     when 'docker'
       docker_service 'default' do
         action [:create, :start]
+      end
+    when 'shell'
+      block do
+        puts "\n######################################## End of Run Information ########################################"
+        puts "# SHELL SHELL BABY"
+        puts "########################################################################################################\n\n"
       end
     end
 end
