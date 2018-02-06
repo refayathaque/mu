@@ -36,21 +36,3 @@
         port: 80
         hosts:
           - "0.0.0.0/0"
-    # - 
-    #   name: gitlab-runner
-    #   size: <%= instance_type %>
-    #   platform: ubuntu
-    #   storage:
-    #   -
-    #     size: 16
-    #   skipinitialupdates: true
-    #   run_list:
-    #     - recipe[demo::gitlab_runner]
-    #   vpc:
-    #     vpc_id: <%= vpc %>
-    #     subnet_pref: public
-    #   dependencies:
-    #   -
-    #     name: "gitlab"
-    #     phase: "groom"
-    #     type: "server"
