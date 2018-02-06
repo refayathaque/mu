@@ -31,20 +31,18 @@ node.default['gitlab']['endpoint'] = 'http://'+node['ec2']['public_dns_name']+'/
 node.default['gitlab']['endpoint'] = node['gitlab']['endpoint']
 ENV['GITLAB_ENDPOINT'] = node['gitlab']['endpoint']
 
-if node['gitlab'].attribute?('runnerToken') && node['gitlab']['generate_runnerToken'] == true
-    # GENERATE A RUNNER TOKEN
-    runnerToken = SecureRandom.urlsafe_base64
-    node.default['gitlab']['runnerToken'] = runnerToken
-    ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN'] = runnerToken
+if !node['gitlab'].attribute?('runnerToken') && node['gitlab']['generate_runnerToken'] == true
+    runnerToken = SecureRandom.urlsafe_base64 #GENERATE A RUNNER TOKEN
+    node.default['gitlab']['runnerToken'] = runnerToken #SAVE THE TOKEN TO AN ATTRIBUTE
+    ENV['GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN'] = runnerToken #PASS THE TOKEN TO THE GITLAB INSTALLER
 end
 
 # TODO SAVE PWD and TOKEN TO VAULT FOR SECURITY
 
-if node['gitlab'].attribute?('rootPWD') && node['gitlab']['generate_password'] == true
-    # GENERATE A ROOT PASSWORD
-    rootPWD = SecureRandom.urlsafe_base64
-    node.default['gitlab']['rootPWD'] = rootPWD
-    ENV['GITLAB_ROOT_PASSWORD'] = rootPWD
+if !node['gitlab'].attribute?('rootPWD') && node['gitlab']['generate_password'] == true
+    rootPWD = SecureRandom.urlsafe_base64 # GENERATE A ROOT PASSWORD
+    node.default['gitlab']['rootPWD'] = rootPWD #SAVE THE PASSWORD TO AN ATTRIBUTE
+    ENV['GITLAB_ROOT_PASSWORD'] = rootPWD #PASS THE PASSWORD TO THE GITLAB INSTALLER
 
     # Notify Users of GITLAB instalation
     ruby_block "gitlabNotify" do
