@@ -76,6 +76,7 @@ else
     execute 'Register Runner' do
       command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor docker --docker-image ubuntu --locked=false --tag-list '#{node['ec2']['public_dns_name']}, #{node['platform_family']}, docker'"
       notifies :restart, "service[gitlab-runner]", :delayed
+      not_if "gitlab-runner verify -n #{Chef::Config['node_name']}"
     end
 
     docker_service 'default' do
