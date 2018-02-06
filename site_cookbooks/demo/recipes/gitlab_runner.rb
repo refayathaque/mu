@@ -75,7 +75,7 @@ else
     end
 
     execute 'Register Runner' do
-      command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor #{node['gitlab-runner']['executor']} #{node['gitlab-runner']['executor_options']} --locked=false --tag-list '#{Chef::Config['node_name']}, #{node['platform_family']}, #{node['gitlab-runner']['executor']}'"
+      command "gitlab-runner register -n -u '#{gitlabServer}' -r '#{gitlabToken}' --executor #{node['gitlab-runner']['executor']} #{node['gitlab-runner']['executor_options']} --run-untagged --locked=false --tag-list '#{Chef::Config['node_name']}, #{node['platform_family']}, #{node['gitlab-runner']['executor']}'"
       notifies :restart, "service[gitlab-runner]", :delayed
       not_if "gitlab-runner verify -n #{Chef::Config['node_name']}"
     end
